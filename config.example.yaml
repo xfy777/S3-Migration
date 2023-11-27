@@ -1,0 +1,14 @@
+source:
+  localDownloadPath: "./tmp"
+  endpoint: ""
+  accessKey: ""
+  secretKey: ""
+  region: ""
+  bucket: ""
+
+destination:
+  endpoint: ""
+  accessKey: ""
+  secretKey: "+OG0p9QGEh4iE"
+  region: ""
+  bucket: ""
