@@ -9,6 +9,6 @@ source:
 destination:
   endpoint: ""
   accessKey: ""
-  secretKey: "+OG0p9QGEh4iE"
+  secretKey: ""
   region: ""
   bucket: ""
