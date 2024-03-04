@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,12 +22,12 @@ type Config struct {
 }
 
 type S3Config struct {
-	AccessKey        string `yaml:"accessKey"`
-	SecretKey        string `yaml:"secretKey"`
-	Endpoint         string `yaml:"endpoint"`
-	Bucket           string `yaml:"bucket"`
+	AccessKey         string `yaml:"accessKey"`
+	SecretKey         string `yaml:"secretKey"`
+	Endpoint          string `yaml:"endpoint"`
+	Bucket            string `yaml:"bucket"`
 	LocalDownloadPath string `yaml:"localDownloadPath"`
-	Region           string `yaml:"region"`
+	Region            string `yaml:"region"`
 }
 
 func main() {
@@ -81,6 +83,11 @@ func downloadFiles(accessKey, secretKey, endpoint, bucket, localPath, region str
 		Endpoint:    aws.String(endpoint),
 		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 		Region:      aws.String(region),
+		HTTPClient: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		},
 	}
 
 	session := session.Must(session.NewSession(config))
@@ -136,9 +143,14 @@ func downloadFiles(accessKey, secretKey, endpoint, bucket, localPath, region str
 
 func uploadFiles(accessKey, secretKey, endpoint, bucket, directory, region string) error {
 	config := &aws.Config{
-		Endpoint:    aws.String(endpoint),
+		Endpoint:    aws.String("http://" + endpoint + "/" + bucket),
 		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 		Region:      aws.String(region),
+		HTTPClient: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		},
 	}
 
 	session := session.Must(session.NewSession(config))
